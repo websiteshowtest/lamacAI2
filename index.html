@@ -2,452 +2,455 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#01C7FC">
-  <title>lamacAI</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#01C7FC">
+<title>lamacAI</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
 
-  <style>
-    :root {
-      --accent: #01C7FC;
-      --accent-dark: #009fc9;
-      --bg: #f5f8fa;
-      --surface: #ffffff;
-      --text: #17212b;
-      --muted: #77838e;
-      --border: #e6edf1;
-      --sidebar: #ffffff;
-      --user: #e8f9ff;
-      --shadow: 0 8px 30px rgba(20, 50, 70, .06);
-    }
+<style>
+:root {
+  --accent: #01C7FC;
+  --accent-dark: #009fc9;
+  --bg: #f5f8fa;
+  --surface: #ffffff;
+  --text: #17212b;
+  --muted: #77838e;
+  --border: #e6edf1;
+  --user: #e8f9ff;
+  --shadow: 0 8px 30px rgba(20,50,70,.06);
+}
 
-    * { box-sizing: border-box; }
+* { box-sizing: border-box; }
 
-    body {
-      margin: 0;
-      font-family: Inter, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      height: 100vh;
-      overflow: hidden;
-    }
+body {
+  margin: 0;
+  font-family: Inter, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  overflow: hidden;
+}
 
-    button, textarea { font: inherit; }
+button, textarea { font: inherit; }
 
-    .app {
-      height: 100vh;
-      display: flex;
-    }
+.app {
+  height: 100vh;
+  display: flex;
+}
 
-    .sidebar {
-      width: 270px;
-      background: var(--sidebar);
-      border-right: 1px solid var(--border);
-      padding: 22px 15px;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      z-index: 5;
-    }
+.sidebar {
+  width: 270px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 22px 15px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 5;
+}
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      padding: 0 8px 25px;
-      font-size: 21px;
-      font-weight: 800;
-      letter-spacing: -.7px;
-    }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 8px 25px;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -.7px;
+}
 
-    .logo {
-      width: 36px;
-      height: 36px;
-      display: grid;
-      place-items: center;
-      border-radius: 12px;
-      color: white;
-      background: linear-gradient(135deg, #01c7fc, #008dbb);
-      font-size: 20px;
-      box-shadow: 0 4px 12px #01c7fc55;
-    }
+.logo, .welcome-logo {
+  display: grid;
+  place-items: center;
+  color: white;
+  background: linear-gradient(135deg, #01c7fc, #008dbb);
+  box-shadow: 0 4px 12px #01c7fc55;
+}
 
-    .new-chat {
-      border: 1px solid var(--border);
-      background: white;
-      color: var(--text);
-      padding: 13px;
-      border-radius: 12px;
-      text-align: left;
-      cursor: pointer;
-      font-weight: 650;
-      transition: .2s;
-    }
+.logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  font-size: 20px;
+}
 
-    .new-chat:hover {
-      border-color: var(--accent);
-      background: #f1fbff;
-    }
+.new-chat {
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--text);
+  padding: 13px;
+  border-radius: 12px;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 650;
+  transition: .2s;
+}
 
-    .section-label {
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 750;
-      letter-spacing: 1px;
-      padding: 25px 9px 10px;
-      text-transform: uppercase;
-    }
+.new-chat:hover {
+  border-color: var(--accent);
+  background: #f1fbff;
+}
 
-    .chat-list {
-      overflow-y: auto;
-      flex: 1;
-    }
+.section-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 1px;
+  padding: 25px 9px 10px;
+  text-transform: uppercase;
+}
 
-    .chat-item {
-      width: 100%;
-      padding: 11px 12px;
-      border: 0;
-      border-radius: 9px;
-      background: transparent;
-      text-align: left;
-      color: var(--text);
-      cursor: pointer;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      margin-bottom: 3px;
-      font-size: 13px;
-    }
+.chat-list {
+  overflow-y: auto;
+  flex: 1;
+}
 
-    .chat-item:hover, .chat-item.active {
-      background: #edf9fd;
-    }
+.chat-item {
+  width: 100%;
+  padding: 11px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 3px;
+  font-size: 13px;
+}
 
-    .sidebar-bottom {
-      border-top: 1px solid var(--border);
-      padding: 15px 8px 0;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.6;
-    }
+.chat-item:hover, .chat-item.active {
+  background: #edf9fd;
+}
 
-    .main {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
+.sidebar-bottom {
+  border-top: 1px solid var(--border);
+  padding: 15px 8px 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
 
-    .topbar {
-      height: 66px;
-      background: rgba(255,255,255,.85);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 25px;
-      flex-shrink: 0;
-    }
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
 
-    .top-title {
-      font-weight: 750;
-      font-size: 15px;
-    }
+.topbar {
+  height: 66px;
+  background: rgba(255,255,255,.9);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 25px;
+  flex-shrink: 0;
+}
 
-    .model-label {
-      font-size: 12px;
-      color: #008dbb;
-      background: #e7faff;
-      padding: 7px 11px;
-      border-radius: 20px;
-      font-weight: 700;
-    }
+.top-title {
+  font-weight: 750;
+  font-size: 15px;
+}
 
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 35px 20px;
-      scroll-behavior: smooth;
-    }
+.model-label {
+  font-size: 12px;
+  color: #008dbb;
+  background: #e7faff;
+  padding: 7px 11px;
+  border-radius: 20px;
+  font-weight: 700;
+}
 
-    .message-area {
-      max-width: 820px;
-      margin: 0 auto;
-    }
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 35px 20px;
+  scroll-behavior: smooth;
+}
 
-    .welcome {
-      text-align: center;
-      padding: 12vh 15px 30px;
-    }
+.message-area {
+  max-width: 820px;
+  margin: 0 auto;
+}
 
-    .welcome-logo {
-      width: 66px;
-      height: 66px;
-      margin: 0 auto 22px;
-      display: grid;
-      place-items: center;
-      border-radius: 22px;
-      color: white;
-      font-size: 34px;
-      background: linear-gradient(135deg, #01c7fc, #008dbb);
-      box-shadow: 0 8px 25px #01c7fc44;
-    }
+.welcome {
+  text-align: center;
+  padding: 12vh 15px 30px;
+}
 
-    .welcome h1 {
-      font-size: clamp(27px, 5vw, 39px);
-      margin: 0 0 12px;
-      letter-spacing: -1.5px;
-    }
+.welcome-logo {
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 22px;
+  border-radius: 22px;
+  font-size: 34px;
+}
 
-    .welcome h1 span { color: var(--accent-dark); }
+.welcome h1 {
+  font-size: clamp(27px,5vw,39px);
+  margin: 0 0 12px;
+  letter-spacing: -1.5px;
+}
 
-    .welcome p {
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.6;
-    }
+.welcome h1 span { color: var(--accent-dark); }
 
-    .suggestions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 9px;
-      margin-top: 28px;
-    }
+.welcome p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
 
-    .suggestion {
-      border: 1px solid var(--border);
-      background: white;
-      border-radius: 12px;
-      padding: 11px 14px;
-      cursor: pointer;
-      color: #44515d;
-      font-size: 13px;
-      transition: .2s;
-    }
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 28px;
+}
 
-    .suggestion:hover {
-      border-color: var(--accent);
-      color: #008dbb;
-    }
+.suggestion {
+  border: 1px solid var(--border);
+  background: white;
+  border-radius: 12px;
+  padding: 11px 14px;
+  cursor: pointer;
+  color: #44515d;
+  font-size: 13px;
+  transition: .2s;
+}
 
-    .message {
-      display: flex;
-      gap: 13px;
-      margin: 25px 0;
-      align-items: flex-start;
-    }
+.suggestion:hover {
+  border-color: var(--accent);
+  color: #008dbb;
+}
 
-    .avatar {
-      width: 34px;
-      height: 34px;
-      border-radius: 11px;
-      flex-shrink: 0;
-      display: grid;
-      place-items: center;
-      font-weight: 800;
-      font-size: 13px;
-    }
+.message {
+  display: flex;
+  gap: 13px;
+  margin: 25px 0;
+  align-items: flex-start;
+}
 
-    .message.user .avatar {
-      background: #e8edf1;
-      color: #52616d;
-    }
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 13px;
+}
 
-    .message.assistant .avatar {
-      color: white;
-      background: linear-gradient(135deg, #01c7fc, #008dbb);
-    }
+.message.user .avatar {
+  background: #e8edf1;
+  color: #52616d;
+}
 
-    .bubble {
-      min-width: 0;
-      max-width: 100%;
-      line-height: 1.7;
-      font-size: 14px;
-      overflow-wrap: anywhere;
-    }
+.message.assistant .avatar {
+  color: white;
+  background: linear-gradient(135deg,#01c7fc,#008dbb);
+}
 
-    .message.user .bubble {
-      background: var(--user);
-      border: 1px solid #d7f3fc;
-      border-radius: 4px 14px 14px 14px;
-      padding: 12px 16px;
-    }
+.bubble {
+  min-width: 0;
+  max-width: 100%;
+  line-height: 1.7;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
 
-    .message.assistant .bubble {
-      padding: 3px 2px;
-      width: 100%;
-    }
+.message.user .bubble {
+  background: var(--user);
+  border: 1px solid #d7f3fc;
+  border-radius: 4px 14px 14px 14px;
+  padding: 12px 16px;
+  white-space: pre-wrap;
+}
 
-    .bubble p { margin: 0 0 12px; }
-    .bubble p:last-child { margin-bottom: 0; }
-    .bubble h1, .bubble h2, .bubble h3 { line-height: 1.3; }
-    .bubble pre {
-      background: #17212b;
-      color: #e8f5fa;
-      padding: 16px;
-      border-radius: 12px;
-      overflow-x: auto;
-    }
-    .bubble code {
-      background: #edf2f5;
-      padding: 2px 5px;
-      border-radius: 5px;
-      font-size: .9em;
-    }
-    .bubble pre code {
-      background: transparent;
-      padding: 0;
-    }
-    .bubble a { color: #008dbb; }
+.message.assistant .bubble {
+  padding: 3px 2px;
+  width: 100%;
+}
 
-    .typing {
-      display: inline-flex;
-      gap: 5px;
-      padding: 8px 0;
-    }
+.bubble p { margin: 0 0 12px; }
+.bubble p:last-child { margin-bottom: 0; }
+.bubble h1, .bubble h2, .bubble h3 { line-height: 1.3; }
 
-    .typing span {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent-dark);
-      animation: pulse 1s infinite ease-in-out;
-    }
+.bubble pre {
+  background: #17212b;
+  color: #e8f5fa;
+  padding: 16px;
+  border-radius: 12px;
+  overflow-x: auto;
+}
 
-    .typing span:nth-child(2) { animation-delay: .15s; }
-    .typing span:nth-child(3) { animation-delay: .3s; }
+.bubble code {
+  background: #edf2f5;
+  padding: 2px 5px;
+  border-radius: 5px;
+  font-size: .9em;
+}
 
-    @keyframes pulse {
-      0%, 60%, 100% { transform: translateY(0); opacity: .4; }
-      30% { transform: translateY(-5px); opacity: 1; }
-    }
+.bubble pre code {
+  background: transparent;
+  padding: 0;
+}
 
-    .composer-wrap {
-      padding: 15px 20px 18px;
-      background: linear-gradient(transparent, var(--bg) 20%);
-      flex-shrink: 0;
-    }
+.bubble a { color: #008dbb; }
 
-    .composer {
-      max-width: 820px;
-      margin: 0 auto;
-      background: white;
-      border: 1px solid #dce6eb;
-      border-radius: 17px;
-      box-shadow: var(--shadow);
-      padding: 12px 13px 10px;
-      transition: border .2s;
-    }
+.typing {
+  display: inline-flex;
+  gap: 5px;
+  padding: 8px 0;
+}
 
-    .composer:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px #01c7fc18, var(--shadow);
-    }
+.typing span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-dark);
+  animation: pulse 1s infinite ease-in-out;
+}
 
-    textarea {
-      display: block;
-      width: 100%;
-      min-height: 48px;
-      max-height: 180px;
-      resize: none;
-      border: 0;
-      outline: 0;
-      padding: 5px 4px;
-      color: var(--text);
-      background: transparent;
-      font-size: 14px;
-      line-height: 1.5;
-    }
+.typing span:nth-child(2) { animation-delay: .15s; }
+.typing span:nth-child(3) { animation-delay: .3s; }
 
-    textarea::placeholder { color: #9aa6af; }
+@keyframes pulse {
+  0%,60%,100% { transform: translateY(0); opacity: .4; }
+  30% { transform: translateY(-5px); opacity: 1; }
+}
 
-    .composer-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 7px;
-    }
+.composer-wrap {
+  padding: 15px 20px 18px;
+  background: linear-gradient(transparent,var(--bg) 20%);
+  flex-shrink: 0;
+}
 
-    .hint {
-      color: #9aa6af;
-      font-size: 11px;
-    }
+.composer {
+  max-width: 820px;
+  margin: 0 auto;
+  background: white;
+  border: 1px solid #dce6eb;
+  border-radius: 17px;
+  box-shadow: var(--shadow);
+  padding: 12px 13px 10px;
+  transition: border .2s;
+}
 
-    .send {
-      border: 0;
-      width: 39px;
-      height: 39px;
-      border-radius: 12px;
-      color: white;
-      background: var(--accent);
-      cursor: pointer;
-      font-size: 19px;
-      transition: .2s;
-    }
+.composer:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px #01c7fc18,var(--shadow);
+}
 
-    .send:hover { background: var(--accent-dark); }
-    .send:disabled { opacity: .45; cursor: not-allowed; }
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  max-height: 180px;
+  resize: none;
+  border: 0;
+  outline: 0;
+  padding: 5px 4px;
+  color: var(--text);
+  background: transparent;
+  font-size: 14px;
+  line-height: 1.5;
+}
 
-    .stop {
-      display: none;
-      border: 1px solid var(--border);
-      background: white;
-      color: #d34d4d;
-      padding: 8px 12px;
-      border-radius: 9px;
-      cursor: pointer;
-      font-size: 12px;
-    }
+textarea::placeholder { color: #9aa6af; }
 
-    .disclaimer {
-      text-align: center;
-      color: #9aa6af;
-      font-size: 10px;
-      padding-top: 10px;
-    }
+.composer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 7px;
+}
 
-    .error {
-      color: #b33c3c;
-      background: #fff0f0;
-      border: 1px solid #ffdada;
-      padding: 12px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      margin-top: 10px;
-    }
+.hint {
+  color: #9aa6af;
+  font-size: 11px;
+}
 
-    .mobile-menu {
-      display: none;
-      border: 0;
-      background: transparent;
-      font-size: 22px;
-      cursor: pointer;
-    }
+.send {
+  border: 0;
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
+  color: white;
+  background: var(--accent);
+  cursor: pointer;
+  font-size: 19px;
+  transition: .2s;
+}
 
-    @media (max-width: 700px) {
-      .sidebar {
-        position: fixed;
-        left: -280px;
-        top: 0;
-        bottom: 0;
-        transition: left .2s;
-        box-shadow: var(--shadow);
-      }
-      .sidebar.open { left: 0; }
-      .mobile-menu { display: block; }
-      .topbar { padding: 0 15px; }
-      .messages { padding: 20px 14px; }
-      .composer-wrap { padding: 10px 12px 14px; }
-      .welcome { padding-top: 9vh; }
-      .hint { display: none; }
-    }
-  </style>
+.send:hover { background: var(--accent-dark); }
+.send:disabled { opacity: .45; cursor: not-allowed; }
+
+.stop {
+  display: none;
+  border: 1px solid var(--border);
+  background: white;
+  color: #d34d4d;
+  padding: 8px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.disclaimer {
+  text-align: center;
+  color: #9aa6af;
+  font-size: 10px;
+  padding-top: 10px;
+}
+
+.error {
+  color: #a52d2d;
+  background: #fff0f0;
+  border: 1px solid #ffdada;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-top: 10px;
+  white-space: pre-wrap;
+}
+
+.mobile-menu {
+  display: none;
+  border: 0;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+@media(max-width:700px) {
+  .sidebar {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    bottom: 0;
+    transition: left .2s;
+    box-shadow: var(--shadow);
+  }
+  .sidebar.open { left: 0; }
+  .mobile-menu { display: block; }
+  .topbar { padding: 0 15px; }
+  .messages { padding: 20px 14px; }
+  .composer-wrap { padding: 10px 12px 14px; }
+  .welcome { padding-top: 9vh; }
+  .hint { display: none; }
+}
+</style>
 </head>
 
 <body>
@@ -459,14 +462,16 @@
       lamacAI
     </div>
 
-    <button class="new-chat" id="newChat">＋ &nbsp; Neuer Chat</button>
+    <button class="new-chat" id="newChat">
+      ＋ &nbsp; Neuer Chat
+    </button>
 
     <div class="section-label">Deine Chats</div>
     <div class="chat-list" id="chatList"></div>
 
     <div class="sidebar-bottom">
       <strong>lamacAI</strong><br>
-      KI-Assistent · Version 1.0<br>
+      KI-Assistent · Vireonix Auto<br>
       © 2026 lamacHub
     </div>
   </aside>
@@ -477,7 +482,7 @@
         <button class="mobile-menu" id="mobileMenu">☰</button>
         <div class="top-title">KI-Assistent</div>
       </div>
-      <div class="model-label">✦ Auto Smart</div>
+      <div class="model-label">✦ Vireonix Auto</div>
     </header>
 
     <section class="messages" id="messages">
@@ -486,16 +491,26 @@
 
     <div class="composer-wrap">
       <form class="composer" id="chatForm">
-        <textarea id="prompt" placeholder="Schreibe eine Nachricht an lamacAI ..."
+        <textarea id="prompt"
+          placeholder="Schreibe eine Nachricht an lamacAI ..."
           rows="1"></textarea>
+
         <div class="composer-bottom">
-          <div class="hint">Enter zum Senden · Shift + Enter für neue Zeile</div>
+          <div class="hint">
+            Enter zum Senden · Shift + Enter für neue Zeile
+          </div>
+
           <div style="display:flex;gap:8px;align-items:center">
-            <button type="button" class="stop" id="stopButton">Stopp</button>
-            <button class="send" id="sendButton" type="submit">↑</button>
+            <button type="button" class="stop" id="stopButton">
+              Stopp
+            </button>
+            <button class="send" id="sendButton" type="submit">
+              ↑
+            </button>
           </div>
         </div>
       </form>
+
       <div class="disclaimer">
         KI-Antworten können Fehler enthalten. Bitte überprüfe wichtige Informationen.
       </div>
@@ -504,37 +519,364 @@
 </div>
 
 <script>
-  const API_URL = "https://api.llmfaucet.dev/v1/chat/completions";
-  const MODEL = "auto:smart";
+/* =========================================
+   VIREONIX KONFIGURATION
+========================================= */
 
-  const STORAGE_KEY = "lamacAI_chats_v1";
+const API_URL = "https://vireonix.ai/v1/chat/completions";
+const MODEL = "auto";
+const STORAGE_KEY = "lamacAI_chats_v2";
 
-  const messageArea = document.getElementById("messageArea");
-  const messagesBox = document.getElementById("messages");
-  const promptInput = document.getElementById("prompt");
-  const chatForm = document.getElementById("chatForm");
-  const sendButton = document.getElementById("sendButton");
-  const stopButton = document.getElementById("stopButton");
-  const chatList = document.getElementById("chatList");
+/* =========================================
+   ELEMENTE
+========================================= */
 
-  let chats = loadChats();
-  let currentChatId = null;
-  let controller = null;
-  let busy = false;
+const messageArea = document.getElementById("messageArea");
+const messagesBox = document.getElementById("messages");
+const promptInput = document.getElementById("prompt");
+const chatForm = document.getElementById("chatForm");
+const sendButton = document.getElementById("sendButton");
+const stopButton = document.getElementById("stopButton");
+const chatList = document.getElementById("chatList");
 
-  function loadChats() {
+let chats = loadChats();
+let currentChatId = null;
+let controller = null;
+let busy = false;
+
+/* =========================================
+   CHATVERWALTUNG
+========================================= */
+
+function loadChats() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return Array.isArray(saved) ? saved : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveChats() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
+  } catch (error) {
+    console.warn("Chatverlauf konnte nicht gespeichert werden:", error);
+  }
+}
+
+function createChat() {
+  if (busy) return;
+
+  const chat = {
+    id: crypto.randomUUID(),
+    title: "Neuer Chat",
+    messages: [],
+    created: Date.now()
+  };
+
+  chats.unshift(chat);
+  currentChatId = chat.id;
+
+  saveChats();
+  renderChatList();
+  renderMessages();
+  closeMobileSidebar();
+}
+
+function getCurrentChat() {
+  return chats.find(chat => chat.id === currentChatId);
+}
+
+function renderChatList() {
+  chatList.innerHTML = "";
+
+  chats.forEach(chat => {
+    const button = document.createElement("button");
+
+    button.className = "chat-item" +
+      (chat.id === currentChatId ? " active" : "");
+
+    button.textContent = "▢  " + chat.title;
+    button.title = chat.title;
+
+    button.addEventListener("click", () => {
+      if (busy) return;
+
+      currentChatId = chat.id;
+      renderChatList();
+      renderMessages();
+      closeMobileSidebar();
+    });
+
+    chatList.appendChild(button);
+  });
+}
+
+/* =========================================
+   NACHRICHTEN DARSTELLEN
+========================================= */
+
+function renderMessages() {
+  const chat = getCurrentChat();
+  messageArea.innerHTML = "";
+
+  if (!chat || chat.messages.length === 0) {
+    showWelcome();
+    return;
+  }
+
+  chat.messages.forEach(message => {
+    addMessageToDOM(message.role, message.content);
+  });
+
+  scrollToBottom();
+}
+
+function showWelcome() {
+  messageArea.innerHTML = `
+    <div class="welcome">
+      <div class="welcome-logo">✦</div>
+      <h1>Hallo! Ich bin <span>lamacAI.</span></h1>
+      <p>Was möchtest du heute wissen oder erstellen?</p>
+
+      <div class="suggestions">
+        <button class="suggestion"
+          data-prompt="Erkläre mir Quantencomputer einfach.">
+          💡 Etwas lernen
+        </button>
+
+        <button class="suggestion"
+          data-prompt="Gib mir eine kreative Minecraft-Mod-Idee.">
+          ⛏️ Minecraft-Idee
+        </button>
+
+        <button class="suggestion"
+          data-prompt="Hilf mir, einen Java-Code zu schreiben.">
+          💻 Programmieren
+        </button>
+      </div>
+    </div>`;
+
+  messageArea.querySelectorAll(".suggestion").forEach(button => {
+    button.addEventListener("click", () => {
+      promptInput.value = button.dataset.prompt;
+      promptInput.focus();
+      autoResize();
+    });
+  });
+}
+
+function addMessageToDOM(role, content, live = false) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "message " + role;
+
+  const avatar = document.createElement("div");
+  avatar.className = "avatar";
+  avatar.textContent = role === "user" ? "Du" : "✦";
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+
+  if (live) {
+    bubble.textContent = content;
+  } else if (role === "assistant") {
+    renderMarkdown(bubble, content);
+  } else {
+    bubble.textContent = content;
+  }
+
+  wrapper.appendChild(avatar);
+  wrapper.appendChild(bubble);
+  messageArea.appendChild(wrapper);
+
+  scrollToBottom();
+  return bubble;
+}
+
+function renderMarkdown(element, content) {
+  if (window.marked && window.DOMPurify) {
+    const html = marked.parse(content);
+    element.innerHTML = DOMPurify.sanitize(html);
+  } else {
+    element.textContent = content;
+  }
+}
+
+function scrollToBottom() {
+  messagesBox.scrollTop = messagesBox.scrollHeight;
+}
+
+/* =========================================
+   EINGABEFELD
+========================================= */
+
+function autoResize() {
+  promptInput.style.height = "auto";
+  promptInput.style.height =
+    Math.min(promptInput.scrollHeight, 180) + "px";
+}
+
+promptInput.addEventListener("input", autoResize);
+
+promptInput.addEventListener("keydown", event => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    chatForm.requestSubmit();
+  }
+});
+
+/* =========================================
+   STATUS
+========================================= */
+
+function setBusy(value) {
+  busy = value;
+  sendButton.disabled = value;
+  stopButton.style.display = value ? "block" : "none";
+  sendButton.textContent = value ? "…" : "↑";
+}
+
+/* =========================================
+   VIREONIX STREAMING
+========================================= */
+
+async function requestVireonix(chat, onText) {
+  const response = await fetch(API_URL, {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    signal: controller.signal,
+
+    body: JSON.stringify({
+      model: MODEL,
+      stream: true,
+
+      messages: [
+        {
+          role: "system",
+          content:
+            "Du bist lamacAI, ein hilfreicher und freundlicher KI-Assistent. " +
+            "Antworte standardmäßig auf Deutsch. " +
+            "Erkläre verständlich und ausführlich, wenn es sinnvoll ist. " +
+            "Bei Programmieraufgaben liefere vollständige und nachvollziehbare Lösungen. " +
+            "Erfinde keine Fakten und sage ehrlich, wenn du etwas nicht weißt."
+        },
+        ...chat.messages
+      ]
+    })
+  });
+
+  if (!response.ok) {
+    let details = "";
+
     try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      const data = await response.json();
+      details = data.error?.message ||
+        data.message ||
+        JSON.stringify(data);
     } catch {
-      return [];
+      details = await response.text();
+    }
+
+    throw new Error(
+      "Vireonix meldet HTTP " + response.status +
+      (details ? ":\n" + details.slice(0, 700) : "")
+    );
+  }
+
+  if (!response.body) {
+    throw new Error("Der Server hat keinen Streaming-Body geliefert.");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+
+  let buffer = "";
+  let fullText = "";
+
+  function processSSELine(line) {
+    const trimmed = line.trim();
+
+    if (!trimmed.startsWith("data:")) return;
+
+    const data = trimmed.slice(5).trim();
+
+    if (!data || data === "[DONE]") return;
+
+    let json;
+
+    try {
+      json = JSON.parse(data);
+    } catch {
+      return;
+    }
+
+    /*
+      Vireonix kann zuerst ein Metadaten-Paket senden.
+      Dieses enthält kein choices-Array.
+      Deshalb ignorieren wir es einfach.
+    */
+
+    const choices = json.choices;
+
+    if (!Array.isArray(choices) || !choices.length) {
+      return;
+    }
+
+    const delta = choices[0]?.delta;
+
+    if (!delta) return;
+
+    const piece = delta.content;
+
+    if (typeof piece === "string" && piece.length > 0) {
+      fullText += piece;
+      onText(fullText);
     }
   }
 
-  function saveChats() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(chats));
+  while (true) {
+    const result = await reader.read();
+
+    if (result.done) break;
+
+    buffer += decoder.decode(result.value, { stream: true });
+
+    const lines = buffer.split(/\r?\n/);
+    buffer = lines.pop() || "";
+
+    for (const line of lines) {
+      processSSELine(line);
+    }
   }
 
-  function createChat() {
+  buffer += decoder.decode();
+
+  if (buffer.trim()) {
+    processSSELine(buffer);
+  }
+
+  if (!fullText.trim()) {
+    throw new Error(
+      "Die Verbindung wurde hergestellt, aber die KI hat keine Textantwort geliefert."
+    );
+  }
+
+  return fullText;
+}
+
+/* =========================================
+   NACHRICHT SENDEN
+========================================= */
+
+async function sendMessage(text) {
+  if (busy || !text.trim()) return;
+
+  if (!currentChatId) {
     const chat = {
       id: crypto.randomUUID(),
       title: "Neuer Chat",
@@ -544,333 +886,145 @@
 
     chats.unshift(chat);
     currentChatId = chat.id;
-    saveChats();
-    renderChatList();
-    renderMessages();
-    closeMobileSidebar();
   }
 
-  function getCurrentChat() {
-    return chats.find(chat => chat.id === currentChatId);
+  const chat = getCurrentChat();
+  if (!chat) return;
+
+  const userText = text.trim();
+
+  chat.messages.push({
+    role: "user",
+    content: userText
+  });
+
+  if (chat.title === "Neuer Chat") {
+    chat.title = userText.slice(0, 35) +
+      (userText.length > 35 ? "…" : "");
   }
 
-  function renderChatList() {
-    chatList.innerHTML = "";
+  saveChats();
+  renderChatList();
 
-    chats.forEach(chat => {
-      const button = document.createElement("button");
-      button.className = "chat-item" +
-        (chat.id === currentChatId ? " active" : "");
-      button.textContent = "▢  " + chat.title;
-      button.title = chat.title;
-
-      button.addEventListener("click", () => {
-        if (busy) return;
-        currentChatId = chat.id;
-        renderChatList();
-        renderMessages();
-        closeMobileSidebar();
-      });
-
-      chatList.appendChild(button);
-    });
-  }
-
-  function renderMessages() {
-    const chat = getCurrentChat();
+  if (chat.messages.length === 1) {
     messageArea.innerHTML = "";
-
-    if (!chat || chat.messages.length === 0) {
-      showWelcome();
-      return;
-    }
-
-    chat.messages.forEach(message => {
-      addMessageToDOM(message.role, message.content);
-    });
-
-    scrollToBottom();
   }
 
-  function showWelcome() {
-    messageArea.innerHTML = `
-      <div class="welcome">
-        <div class="welcome-logo">✦</div>
-        <h1>Hallo! Ich bin <span>lamacAI.</span></h1>
-        <p>Was möchtest du heute wissen oder erstellen?</p>
-        <div class="suggestions">
-          <button class="suggestion" data-prompt="Erkläre mir Quantencomputer einfach.">
-            💡 Etwas lernen
-          </button>
-          <button class="suggestion" data-prompt="Gib mir eine kreative Minecraft-Mod-Idee.">
-            ⛏️ Minecraft-Idee
-          </button>
-          <button class="suggestion" data-prompt="Hilf mir, einen Java-Code zu schreiben.">
-            💻 Programmieren
-          </button>
-        </div>
-      </div>`;
+  addMessageToDOM("user", userText);
 
-    messageArea.querySelectorAll(".suggestion").forEach(button => {
-      button.addEventListener("click", () => {
-        promptInput.value = button.dataset.prompt;
-        promptInput.focus();
-        autoResize();
-      });
-    });
-  }
+  promptInput.value = "";
+  autoResize();
 
-  function addMessageToDOM(role, content, isLive = false) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "message " + role;
+  const assistantBubble = addMessageToDOM("assistant", "", true);
 
-    const avatar = document.createElement("div");
-    avatar.className = "avatar";
-    avatar.textContent = role === "user" ? "Du" : "✦";
+  const typing = document.createElement("div");
+  typing.className = "typing";
+  typing.innerHTML = "<span></span><span></span><span></span>";
+  assistantBubble.appendChild(typing);
 
-    const bubble = document.createElement("div");
-    bubble.className = "bubble";
+  setBusy(true);
+  controller = new AbortController();
 
-    if (isLive) {
-      bubble.textContent = content;
-    } else if (role === "assistant") {
-      renderMarkdown(bubble, content);
-    } else {
-      bubble.textContent = content;
-    }
+  let fullText = "";
 
-    wrapper.appendChild(avatar);
-    wrapper.appendChild(bubble);
-    messageArea.appendChild(wrapper);
-
-    scrollToBottom();
-    return bubble;
-  }
-
-  function renderMarkdown(element, content) {
-    if (window.marked && window.DOMPurify) {
-      const html = marked.parse(content);
-      element.innerHTML = DOMPurify.sanitize(html);
-    } else {
-      element.textContent = content;
-    }
-  }
-
-  function scrollToBottom() {
-    messagesBox.scrollTop = messagesBox.scrollHeight;
-  }
-
-  function autoResize() {
-    promptInput.style.height = "auto";
-    promptInput.style.height =
-      Math.min(promptInput.scrollHeight, 180) + "px";
-  }
-
-  promptInput.addEventListener("input", autoResize);
-
-  promptInput.addEventListener("keydown", event => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      chatForm.requestSubmit();
-    }
-  });
-
-  function setBusy(value) {
-    busy = value;
-    sendButton.disabled = value;
-    stopButton.style.display = value ? "block" : "none";
-    sendButton.textContent = value ? "…" : "↑";
-  }
-
-  async function sendMessage(text) {
-    if (busy || !text.trim()) return;
-
-    if (!currentChatId) createChat();
-
-    const chat = getCurrentChat();
-    if (!chat) return;
-
-    const userMessage = {
-      role: "user",
-      content: text.trim()
-    };
-
-    chat.messages.push(userMessage);
-
-    if (chat.title === "Neuer Chat") {
-      chat.title = text.trim().slice(0, 35) +
-        (text.trim().length > 35 ? "…" : "");
-    }
-
-    saveChats();
-    renderChatList();
-
-    if (chat.messages.length === 1) {
-      messageArea.innerHTML = "";
-    }
-
-    addMessageToDOM("user", userMessage.content);
-
-    promptInput.value = "";
-    autoResize();
-
-    const assistantBubble = addMessageToDOM("assistant", "", true);
-    const typing = document.createElement("div");
-    typing.className = "typing";
-    typing.innerHTML = "<span></span><span></span><span></span>";
-    assistantBubble.appendChild(typing);
-
-    setBusy(true);
-    controller = new AbortController();
-
-    try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer free"
-        },
-        signal: controller.signal,
-        body: JSON.stringify({
-          model: MODEL,
-          stream: true,
-          messages: [
-            {
-              role: "system",
-              content:
-                "Du bist lamacAI, ein hilfreicher, freundlicher KI-Assistent. " +
-                "Antworte standardmäßig auf Deutsch. Erkläre verständlich, " +
-                "sei ehrlich bei Unsicherheit und erfinde keine Fakten."
-            },
-            ...chat.messages
-          ]
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          "Serverfehler " + response.status + ": " +
-          errorText.slice(0, 350)
-        );
-      }
-
-      if (!response.body) {
-        throw new Error("Dieser Browser unterstützt den Livestream nicht.");
-      }
-
+  try {
+    fullText = await requestVireonix(chat, text => {
       typing.remove();
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-      let fullText = "";
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          const trimmed = line.trim();
-
-          if (!trimmed.startsWith("data:")) continue;
-
-          const data = trimmed.slice(5).trim();
-
-          if (data === "[DONE]") continue;
-
-          try {
-            const json = JSON.parse(data);
-            const piece = json.choices?.[0]?.delta?.content;
-
-            if (typeof piece === "string" && piece.length > 0) {
-              fullText += piece;
-              assistantBubble.textContent = fullText;
-              scrollToBottom();
-            }
-          } catch {
-            // Unvollständige oder nicht relevante Stream-Zeile ignorieren.
-          }
-        }
-      }
-
-      if (!fullText.trim()) {
-        throw new Error("Die KI hat keine Antwort geliefert.");
-      }
-
-      chat.messages.push({
-        role: "assistant",
-        content: fullText
-      });
-
-      renderMarkdown(assistantBubble, fullText);
-      saveChats();
-
-    } catch (error) {
-      typing.remove();
-
-      if (error.name === "AbortError") {
-        if (assistantBubble.textContent.trim()) {
-          chat.messages.push({
-            role: "assistant",
-            content: assistantBubble.textContent
-          });
-          saveChats();
-        } else {
-          assistantBubble.textContent = "Antwort abgebrochen.";
-        }
-      } else {
-        assistantBubble.innerHTML = "";
-        const errorBox = document.createElement("div");
-        errorBox.className = "error";
-        errorBox.textContent =
-          "Die Verbindung zur KI ist fehlgeschlagen: " +
-          error.message +
-          " Bitte versuche es später erneut.";
-        assistantBubble.appendChild(errorBox);
-      }
-    } finally {
-      controller = null;
-      setBusy(false);
-      renderChatList();
+      assistantBubble.textContent = text;
       scrollToBottom();
+    });
+
+    typing.remove();
+
+    chat.messages.push({
+      role: "assistant",
+      content: fullText
+    });
+
+    renderMarkdown(assistantBubble, fullText);
+    saveChats();
+
+  } catch (error) {
+    typing.remove();
+
+    if (error.name === "AbortError") {
+      if (fullText.trim()) {
+        chat.messages.push({
+          role: "assistant",
+          content: fullText
+        });
+
+        renderMarkdown(assistantBubble, fullText);
+        saveChats();
+      } else {
+        assistantBubble.textContent = "Antwort abgebrochen.";
+      }
+    } else {
+      assistantBubble.innerHTML = "";
+
+      const errorBox = document.createElement("div");
+      errorBox.className = "error";
+
+      let message = error.message || "Unbekannter Fehler";
+
+      if (message.includes("Failed to fetch") ||
+          message.includes("Load failed") ||
+          message.includes("NetworkError")) {
+        message =
+          "Der Browser konnte Vireonix nicht erreichen.\n\n" +
+          "Mögliche Ursachen:\n" +
+          "• Der Anbieter ist gerade nicht erreichbar.\n" +
+          "• Die Browser-Verbindung wird durch CORS blockiert.\n" +
+          "• Deine Internetverbindung funktioniert nicht.\n\n" +
+          "Bitte versuche es später erneut.";
+      }
+
+      errorBox.textContent = "Verbindungsfehler:\n" + message;
+      assistantBubble.appendChild(errorBox);
     }
-  }
 
-  chatForm.addEventListener("submit", event => {
-    event.preventDefault();
-    sendMessage(promptInput.value);
-  });
-
-  stopButton.addEventListener("click", () => {
-    if (controller) controller.abort();
-  });
-
-  document.getElementById("newChat").addEventListener("click", () => {
-    if (!busy) createChat();
-  });
-
-  document.getElementById("mobileMenu").addEventListener("click", () => {
-    document.getElementById("sidebar").classList.toggle("open");
-  });
-
-  function closeMobileSidebar() {
-    document.getElementById("sidebar").classList.remove("open");
-  }
-
-  // Beim Start den letzten Chat öffnen.
-  if (chats.length > 0) {
-    currentChatId = chats[0].id;
+  } finally {
+    controller = null;
+    setBusy(false);
     renderChatList();
-    renderMessages();
-  } else {
-    createChat();
+    scrollToBottom();
   }
+}
+
+/* =========================================
+   BUTTONS UND EVENTS
+========================================= */
+
+chatForm.addEventListener("submit", event => {
+  event.preventDefault();
+  sendMessage(promptInput.value);
+});
+
+stopButton.addEventListener("click", () => {
+  if (controller) controller.abort();
+});
+
+document.getElementById("newChat").addEventListener("click", createChat);
+
+document.getElementById("mobileMenu").addEventListener("click", () => {
+  document.getElementById("sidebar").classList.toggle("open");
+});
+
+function closeMobileSidebar() {
+  document.getElementById("sidebar").classList.remove("open");
+}
+
+/* =========================================
+   START
+========================================= */
+
+if (chats.length > 0) {
+  currentChatId = chats[0].id;
+  renderChatList();
+  renderMessages();
+} else {
+  createChat();
+}
 </script>
 </body>
 </html>
